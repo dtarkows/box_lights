@@ -10,7 +10,6 @@ const unsigned long buttonDuration = 500;
 // Number of functions that have been defined;
 const unsigned short NUM_FUNCTIONS = 5;
 unsigned short state = 0;
-boolean needsUpdate = true;
 void (*functions[NUM_FUNCTIONS])(void);
 
 
@@ -39,80 +38,38 @@ void setup() {
   strip.begin();
 }
 
-void loop() {
-  (*functions[state])();
+void setColor(uint8_t red, uint8_t green, uint8_t blue) {
+  for (int i = 0; i < PIXEL_COUNT; i++) {
+    strip.setPixelColor(i, red, green, blue);
+  }
+  strip.show();
 }
-
-void buttonPressed() {
-  unsigned long currentTime = millis();
-  if (currentTime < lastTime) {
-    //Handle roll over in millis counter.
-    lastTime = 0;
-  }
-  if ( (currentTime - lastTime) < buttonDuration) {
-    return;
-  }
-  lastTime = currentTime;
-  state++;
-  if (state > NUM_FUNCTIONS) {
-    state = 0;
-  }
-  needsUpdate = true;
-}
-
 void turnOnPink(void) {
-  if (!needsUpdate) {
-    return;
-  }
   setColor(255, 20, 147);
-  needsUpdate = false;
 }
 
 void turnOnBlue(void) {
-  if (!needsUpdate) {
-    return;
-  }
   setColor(0, 0, 255);
-  needsUpdate = false;
 }
 
 void turnOff(void) {
-  if (!needsUpdate) {
-    return;
-  }
   for (int i = 0; i < PIXEL_COUNT; i++) {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
   }
   strip.show();
-  needsUpdate = false;
 }
 void white(void) {
-  if (!needsUpdate) {
-    return;
-  }
   for (int i = 0; i < PIXEL_COUNT; i++) {
     strip.setPixelColor(i, strip.Color(255, 255, 255));
   }
   strip.show();
-  needsUpdate = false;
 } 
 
 void rainbow(void) {
-  if (!needsUpdate) {
-    return;
-  }
   uint16_t i;
 
   for(i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, Wheel((i * 256 / strip.numPixels())));
-  }
-  strip.show();
-  needsUpdate = false;
-}
-
-void setColor(uint8_t red, uint8_t green, uint8_t blue) {
-  for (int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, red, green, blue);
   }
   strip.show();
 }
@@ -130,4 +87,23 @@ uint32_t Wheel(byte WheelPos) {
    WheelPos -= 170;
    return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
   }
+}
+
+void buttonPressed() {
+  unsigned long currentTime = millis();
+  if (currentTime < lastTime) {
+    //Handle roll over in millis counter.
+    lastTime = 0;
+  }
+  if ( (currentTime - lastTime) < buttonDuration) {
+    return;
+  }
+  lastTime = currentTime;
+  state++;
+  if (state > NUM_FUNCTIONS) {
+    state = 0;
+  }
+}
+void loop() {
+  (*functions[state])();
 }
