@@ -8,7 +8,7 @@ unsigned long lastTime = 0;
 const unsigned long buttonDuration = 500;
 
 // Number of functions that have been defined;
-const unsigned short NUM_FUNCTIONS = 4;
+const unsigned short NUM_FUNCTIONS = 5;
 unsigned short state = 0;
 void (*functions[NUM_FUNCTIONS])(void);
 
@@ -28,22 +28,28 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NE
 
 void setup() {
   functions[0] = turnOff;
-  functions[1] = turnOn;
-  functions[2] = white;
-  functions[3] = rainbow;
-  Serial.begin(57600);
+  functions[1] = turnOnPink;
+  functions[2] = turnOnBlue;
+  functions[3] = white;
+  functions[4] = rainbow;
   pinMode(2, INPUT_PULLUP);
   attachInterrupt(0, buttonPressed, FALLING);
   turnOff();
   strip.begin();
 }
 
-void turnOn(void) {
+void setColor(uint8_t red, uint8_t green, uint8_t blue) {
   for (int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, strip.Color(255, 20, 147));
+    strip.setPixelColor(i, red, green, blue);
   }
   strip.show();
-  Serial.println("on");
+}
+void turnOnPink(void) {
+  setColor(255, 20, 147);
+}
+
+void turnOnBlue(void) {
+  setColor(0, 0, 255);
 }
 
 void turnOff(void) {
@@ -51,14 +57,12 @@ void turnOff(void) {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
   }
   strip.show();
-  Serial.println("off");
 }
 void white(void) {
   for (int i = 0; i < PIXEL_COUNT; i++) {
     strip.setPixelColor(i, strip.Color(255, 255, 255));
   }
   strip.show();
-  Serial.println("white");
 } 
 
 void rainbow(void) {
