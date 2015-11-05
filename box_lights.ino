@@ -27,66 +27,15 @@ void (*functions[NUM_FUNCTIONS])(void);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  functions[0] = turnOff;
+  functions[0] = turnOnBlack;
   functions[1] = turnOnPink;
   functions[2] = turnOnBlue;
-  functions[3] = white;
+  functions[3] = turnOnWhite;
   functions[4] = rainbow;
   pinMode(2, INPUT_PULLUP);
   attachInterrupt(0, buttonPressed, FALLING);
-  turnOff();
+  turnOnBlack();
   strip.begin();
-}
-
-void setColor(uint8_t red, uint8_t green, uint8_t blue) {
-  for (int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, red, green, blue);
-  }
-  strip.show();
-}
-void turnOnPink(void) {
-  setColor(255, 20, 147);
-}
-
-void turnOnBlue(void) {
-  setColor(0, 0, 255);
-}
-
-void turnOff(void) {
-  for (int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, strip.Color(0, 0, 0));
-  }
-  strip.show();
-}
-void white(void) {
-  for (int i = 0; i < PIXEL_COUNT; i++) {
-    strip.setPixelColor(i, strip.Color(255, 255, 255));
-  }
-  strip.show();
-} 
-
-void rainbow(void) {
-  uint16_t i;
-
-  for(i=0; i<strip.numPixels(); i++) {
-    strip.setPixelColor(i, Wheel((i * 256 / strip.numPixels())));
-  }
-  strip.show();
-}
-
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if(WheelPos < 85) {
-   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  } else if(WheelPos < 170) {
-    WheelPos -= 85;
-   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  } else {
-   WheelPos -= 170;
-   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-  }
 }
 
 void buttonPressed() {
@@ -104,6 +53,7 @@ void buttonPressed() {
     state = 0;
   }
 }
+
 void loop() {
   (*functions[state])();
 }
