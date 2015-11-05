@@ -1,14 +1,12 @@
 #include <Adafruit_NeoPixel.h>
 
-
-
 unsigned long lastTime = 0;
 
 // MS to wait to debounce a button press.
 const unsigned long buttonDuration = 500;
 
 // Number of functions that have been defined;
-const unsigned short NUM_FUNCTIONS = 5;
+const unsigned short NUM_FUNCTIONS = 6;
 unsigned short state = 0;
 void (*functions[NUM_FUNCTIONS])(void);
 
@@ -32,10 +30,12 @@ void setup() {
   functions[2] = turnOnBlue;
   functions[3] = turnOnWhite;
   functions[4] = rainbow;
+  functions[5] = scanner;
   pinMode(2, INPUT_PULLUP);
   attachInterrupt(0, buttonPressed, FALLING);
   turnOnBlack();
   strip.begin();
+  Serial.begin(57600);
 }
 
 void buttonPressed() {
